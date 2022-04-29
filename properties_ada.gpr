@@ -1,0 +1,16 @@
+project Properties_Ada is
+
+    for Languages use ("Ada");
+    for Source_Dirs use ("src/**");
+    for Object_Dir use "obj";
+
+    for Interfaces use ("properties.ads");
+
+    for Library_Name use "properties_ada";
+    for Library_Dir use "bin";
+    for Library_Kind use "dynamic";
+
+    package Compiler is
+        for Switches ("Ada") use ("-gnatX");
+    end Compiler;
+end Properties_Ada;
