@@ -1,0 +1,33 @@
+name: Ubuntu 20.04
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up GNAT toolchain
+      run: >
+        sudo apt-get update && 
+        sudo apt-get install gnat gprbuild libahven8-dev
+
+    - name: Build
+      run: gprbuild -j0 -p test/properties_ada_test.gpr
+      
+    - name: Run Tests
+      run: ./bin/test_runner -x -d test-results/
+      
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      with:
+        report_paths: 'test-results/TEST-*.xml'
