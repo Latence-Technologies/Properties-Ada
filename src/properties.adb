@@ -25,11 +25,64 @@ package body Properties is
         Close(File);
     end Save;
 
+    function Find_Delimiter(Line : String) return Narual is
+        Equal_Pos : Natural := Line'First;
+        Colon_Pos : Natural := Line'First;
+        Space_Pos : Natural := Line'First;
+    begin
+        loop
+            Equal_Pos := Index(Line, "=", Equal_Pos, Ada.Strings.Forward);
+            exit when Equal_Pos = 0;
+
+            if Equal_Pos = Line'First then
+                raise Syntax_Error with "Line starts with =, key must not be empty. You may escape = characters with \=";
+            end if;
+
+            exit when Line(Equal_Pos - 1) /= "\";
+        end loop;
+
+        loop
+            Colon_Pos := Index(Line, ":", Line'First, Ada.Strings.Forward);
+            exit when Colon_Pos = 0;
+
+            if Colon_Pos = Line'First then
+                raise Syntax_Error with "Line starts with :, key must not be empty. You may escape : characters with \:";
+            end if;
+
+            exit when Line(Colon_Pos - 1) /= "\";
+        end loop;
+
+        loop
+            Colon_Pos := Index(Line, ":", Line'First, Ada.Strings.Forward);
+            exit when Colon_Pos = 0;
+
+            if Colon_Pos = Line'First then
+                raise Syntax_Error with "Line starts with :, key must not be empty. You may escape : characters with \:";
+            end if;
+
+            exit when Line(Colon_Pos - 1) /= "\";
+        end loop;
+
+
+        if Equal_Pos = 0 and Colon_Pos = 0 and Space_Pos = 0 then
+            -- no value delimiter, this is a key with no value (valid in .properties format)
+            Map.Include(Line, "");
+            goto Continue;
+        end if;
+
+        if Equal_Pos = 0 then
+            Value_Delimiter := Colon_Pos;
+        elsif Colon_Pos = 0 then
+            Value_Delimiter := Equal_Pos;
+        else
+            Value_Delimiter := Natural'Min(Colon_Pos, Equal_Pos);
+        end if;
+    end Find_Delimiter;
+
     function Load(File_Path : String) return Map_Type is
         File : File_Type;
         Map : Map_Type;
         Line : Unbounded_String;
-        Key_Value_End : Natural;
         Value_Delimiter : Natural;
     begin
         Open(File, In_File, File_Path);
@@ -37,21 +90,13 @@ package body Properties is
         loop
             exit when End_Of_File(File);
             Get_Line(File, Line);
-            Key_Value_End := Index(Line, "#", 1);
+            Trim(Line, Ada.Strings.Left);
 
-            if Key_Value_End = 0 then
-                Key_Value_End := Length(Line);
-            elsif Key_Value_End = 1 then
-                goto Continue;
-            else
-                Key_Value_End := Key_Value_End - 1;
-            end if;
-
-            Value_Delimiter := Index(Line, "=", Key_Value_End, Ada.Strings.Backward);
-
-            if Value_Delimiter = 0 then
+            if Line(Line'First) = "#" then
                 goto Continue;
             end if;
+
+            Value_Delimiter := Find_Delimiter(Line);
 
             declare
                 Key : Unbounded_String := Unbounded_Slice(Line, 1, Value_Delimiter - 1);

@@ -9,6 +9,8 @@ with Ada.Strings.Unbounded.Hash;
 --
 package Properties is
 
+    Syntax_Error : exception;
+
     package Property_Map is new Ada.Containers.Hashed_Maps
         (Key_Type        => Unbounded_String,
          Element_Type    => Unbounded_String,
