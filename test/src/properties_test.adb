@@ -16,6 +16,9 @@ package body Properties_Test is
         Ahven.Framework.Add_Test_Routine(T,
                                          Test_Properties_Load'Access,
                                          "Test_Properties_Load");
+        Ahven.Framework.Add_Test_Routine(T,
+                                         Test_Properties_Save'Access,
+                                         "Test_Properties_Save");
     end Initialize;
 
     function "+"(Value : String) return Unbounded_String renames To_Unbounded_String;
@@ -90,24 +93,23 @@ package body Properties_Test is
         Map := Properties.Load(File_Path);
 
         Assert_Equal(Integer(Properties.Property_Map.Length(Map)), 16, "Loaded properties map has incorrect size");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"website"), +"https://en.wikipedia.org/", "Incorrect properties map parsing for equal property");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"language"), +"English", "Incorrect properties map parsing for colon property");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"topic"), +".properties files", "Incorrect properties map parsing for space property");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"empty"), +"", "Incorrect properties map parsing for empty property");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"hello"), +"hello", "Incorrect trimming of properties");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"duplicateKey"), +"second", "Incorrect duplicate key parsing");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"delimiterCharacters:= "), +"This is the value for the key ""delimiterCharacters:= """, "Incorrect delimiter character escaping");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"multiline"), +"This line continues", "Incorrect multiline handling");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"spaceending"), +"This line does not continue  ", "Incorrect escaped space character handling");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"notcontinue"), +"", "Incorrect escaped space character handling");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"path"), +"c:\wiki\templates", "Incorrect handling of escaped backslash");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"evenKey"), +"This is on one line\", "Incorrect handling of even number of multiple backslash character at the end of the line");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"oddKey"), +"This is line one and\# This is line two", "Incorrect handling of odd number of multiple backslash character at the end of the line");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"welcome"), +"Welcome to Wikipedia!", "Incorrect trimming of spaces at the beginning of additional lines");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"valueWithEscapes"), +"This is a newline" & LF & " and a carriage return" & CR & " and a tab" & HT & ".", "Incorrect parsing of \n, \r and \t characters");
-        -- Assert_Equal(Properties.Property_Map.Element(Map, +"encodedHelloInJapanese"), +"こんにちは", "Incorrect parsing of unicode escape characters");
-        Assert_Equal(Properties.Property_Map.Element(Map, +"helloInJapanese"), +"こんにちは", "Failure to parse UTF-8 japanese characters");
-
+        Assert_Equal(Properties.Get(Map, +"website"), +"https://en.wikipedia.org/", "Incorrect properties map parsing for equal property");
+        Assert_Equal(Properties.Get(Map, +"language"), +"English", "Incorrect properties map parsing for colon property");
+        Assert_Equal(Properties.Get(Map, +"topic"), +".properties files", "Incorrect properties map parsing for space property");
+        Assert_Equal(Properties.Get(Map, +"empty"), +"", "Incorrect properties map parsing for empty property");
+        Assert_Equal(Properties.Get(Map, +"hello"), +"hello", "Incorrect trimming of properties");
+        Assert_Equal(Properties.Get(Map, +"duplicateKey"), +"second", "Incorrect duplicate key parsing");
+        Assert_Equal(Properties.Get(Map, +"delimiterCharacters:= "), +"This is the value for the key ""delimiterCharacters:= """, "Incorrect delimiter character escaping");
+        Assert_Equal(Properties.Get(Map, +"multiline"), +"This line continues", "Incorrect multiline handling");
+        Assert_Equal(Properties.Get(Map, +"spaceending"), +"This line does not continue  ", "Incorrect escaped space character handling");
+        Assert_Equal(Properties.Get(Map, +"notcontinue"), +"", "Incorrect escaped space character handling");
+        Assert_Equal(Properties.Get(Map, +"path"), +"c:\wiki\templates", "Incorrect handling of escaped backslash");
+        Assert_Equal(Properties.Get(Map, +"evenKey"), +"This is on one line\", "Incorrect handling of even number of multiple backslash character at the end of the line");
+        Assert_Equal(Properties.Get(Map, +"oddKey"), +"This is line one and\# This is line two", "Incorrect handling of odd number of multiple backslash character at the end of the line");
+        Assert_Equal(Properties.Get(Map, +"welcome"), +"Welcome to Wikipedia!", "Incorrect trimming of spaces at the beginning of additional lines");
+        Assert_Equal(Properties.Get(Map, +"valueWithEscapes"), +"This is a newline" & LF & " and a carriage return" & CR & " and a tab" & HT & ".", "Incorrect parsing of \n, \r and \t characters");
+        -- Assert_Equal(Properties.Get(Map, +"encodedHelloInJapanese"), +"こんにちは", "Incorrect parsing of unicode escape characters");
+        Assert_Equal(Properties.Get(Map, +"helloInJapanese"), +"こんにちは", "Failure to parse UTF-8 japanese characters");
 
         Ada.Directories.Delete_File(File_Path);
     exception
@@ -119,8 +121,25 @@ package body Properties_Test is
     procedure Test_Properties_Save is
         File_Path : constant String := "tmp2.properties";
         Map : Properties.Map_Type;
+        Map2 : Properties.Map_Type;
     begin
-        Properties.Save(File_Path, Map);
+        Properties.Set(Map, "hello", "world");
+        Properties.Set(Map, "hello2", "wor=ld");
+        Properties.Set(Map, "hello:hello", "space space");
+        Properties.Set(Map, "\backslash\", "");
+        Properties.Save(Map, File_Path);
+        Map2 := Properties.Load(File_Path);
+
+        Assert_Equal(Integer(Properties.Property_Map.Length(Map2)), 4, "Loaded properties map has incorrect size");
+        Assert_Equal(Properties.Property_Map.Element(Map, +"hello"), +"world", "Generated properties file is incorrect after saving and parsing");
+        Assert_Equal(Properties.Property_Map.Element(Map, +"hello2"), +"wor=ld", "Generated properties file is incorrect after saving and parsing");
+        Assert_Equal(Properties.Property_Map.Element(Map, +"hello:hello"), +"space space", "Generated properties file is incorrect after saving and parsing");
+        Assert_Equal(Properties.Property_Map.Element(Map, +"\backslash\"), +"", "Generated properties file is incorrect after saving and parsing");
+
         Ada.Directories.Delete_File(File_Path);
+    exception
+        when others =>
+            Ada.Directories.Delete_File(File_Path);
+            raise;
     end Test_Properties_Save;
 end Properties_Test;

@@ -8,15 +8,15 @@ with Ada.Text_IO; use Ada.Text_IO;
 
 package body Properties is
 
-    procedure Save(File_Path  : String;
-                   Properties : Map_Type) is
+    procedure Save(Properties : Map_Type;
+                   File_Path  : String) is
         File : File_Type;
     begin
         Create(File, Out_File, File_Path);
     
         for Local_Cursor in Properties.Iterate loop
             declare
-                Line : Unbounded_String := Property_Map.Key(Local_Cursor) & "=" & Property_Map.Element(Local_Cursor);
+                Line : Unbounded_String := Escape(Property_Map.Key(Local_Cursor)) & "=" & Escape(Property_Map.Element(Local_Cursor));
             begin
             
             Ada.Strings.Unbounded.Text_IO.Put_Line(File, Line);
@@ -160,13 +160,18 @@ package body Properties is
                 or else Element(Value, Index) = ' '
                 or else Element(Value, Index) = '\' then
                 Value := Replace_Slice(Value, Index, Index, "\" & Element(Value, Index));
+                Index := Index + 1;
             elsif Element(Value, Index) = LF then
                 Value := Replace_Slice(Value, Index, Index, "\n");
+                Index := Index + 1;
             elsif Element(Value, Index) = CR then
                 Value := Replace_Slice(Value, Index, Index, "\r");
+                Index := Index + 1;
             elsif Element(Value, Index) = HT then
                 Value := Replace_Slice(Value, Index, Index, "\t");
+                Index := Index + 1;
             end if;
+            Index := Index + 1;
         end loop;
         return Value;
     end Escape;
@@ -208,4 +213,54 @@ package body Properties is
 
         return Escape_Count mod 2 = 1; -- odd number of escape characters at the end
     end Is_Multiline;
+
+    function Contains(Map : Map_Type; Key : Unbounded_String) return Boolean is
+    begin
+        return Property_Map.Contains(Map, Key);
+    end Contains;
+
+    function Contains(Map : Map_Type; Key : String) return Boolean is
+    begin
+        return Contains(Map, +Key);
+    end Contains;
+
+    function Get(Map : Map_Type; Key : Unbounded_String) return Unbounded_String is
+    begin
+        return Property_Map.Element(Map, Key);
+    end Get;
+
+    procedure Set(Map : in out Map_Type; Key : Unbounded_String; Value : Unbounded_String) is
+    begin
+        Property_Map.Include(Map, Key, Value);
+    end Set;
+
+    function Get(Map : Map_Type; Key : String) return String is
+    begin
+        return +Get(Map, +Key);
+    end Get;
+
+    procedure Set(Map : in out Map_Type; Key : String; Value : String) is
+    begin
+        Set(Map, +Key, +Value);
+    end Set;
+
+    function Get(Map : Map_Type; Key : String) return Unbounded_String is
+    begin
+        return Get(Map, +Key);
+    end Get;
+
+    procedure Set(Map : in out Map_Type; Key : String; Value : Unbounded_String) is
+    begin
+        Set(Map, +Key, Value);
+    end Set;
+
+    function Get(Map : Map_Type; Key : Unbounded_String) return String is
+    begin
+        return +Get(Map, Key);
+    end Get;
+
+    procedure Set(Map : in out Map_Type; Key : Unbounded_String; Value : String) is
+    begin
+        Set(Map, Key, +Value);
+    end Set;
 end Properties;

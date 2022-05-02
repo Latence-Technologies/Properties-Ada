@@ -20,14 +20,14 @@ package Properties is
     subtype Map_Type is Property_Map.Map;
 
     --
-    -- Saves the specified .properties file from a Property_Map. If the file 
+    -- Saves the specified .properties file from a Property_Map. If the file
     -- does not exist it is created, otherwise it is overwritten.
     --
-    -- @param File_Path path of the file
     -- @param Properties map of properties to save
+    -- @param File_Path path of the file
     --
-    procedure Save(File_Path  : String;
-                   Properties : Map_Type);
+    procedure Save(Properties : Map_Type;
+                   File_Path  : String);
 
     --
     -- Loads the content of a .properties file into a Property_Map
@@ -35,12 +35,111 @@ package Properties is
     -- @param File_Path path to the file to load
     -- @return content of the properties file as a map of property
     -- @raises Ada.IO_Exceptions.NAME_ERROR if the file does not exist
+    -- @raises Syntax_Error if the properties file has an invalid syntax
     --
     function Load(File_Path : String) return Map_Type;
+
+    --
+    -- Checks if the map contains the specified key
+    --
+    -- @param Map map to query
+    -- @param Key key to check for existence
+    --
+    function Contains(Map : Map_Type; Key : Unbounded_String) return Boolean;
+
+    --
+    -- Checks if the map contains the specified key
+    --
+    -- @param Map map to query
+    -- @param Key key to check for existence
+    --
+    function Contains(Map : Map_Type; Key : String) return Boolean;
+
+    --
+    -- Retrieves the value associated to the specified key in the map
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @return value associated to the key
+    -- @raises Constraint_Error if the key is not in the map
+    --
+    function Get(Map : Map_Type; Key : Unbounded_String) return Unbounded_String;
+
+    --
+    -- Sets the specified key to the specified value in the properties map. If
+    -- the key is already present, overrides it
+    --
+    -- @param Map map to query
+    -- @param Key key to set
+    -- @param Value value to set
+    --
+    procedure Set(Map : in out Map_Type; Key : Unbounded_String; Value : Unbounded_String);
+
+    --
+    -- Retrieves the value associated to the specified key in the map
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @return value associated to the key
+    -- @raises Constraint_Error if the key is not in the map
+    --
+    function Get(Map : Map_Type; Key : String) return String;
+
+    --
+    -- Sets the specified key to the specified value in the properties map. If
+    -- the key is already present, overrides it
+    --
+    -- @param Map map to query
+    -- @param Key key to set
+    -- @param Value value to set
+    --
+    procedure Set(Map : in out Map_Type; Key : String; Value : String);
+
+    --
+    -- Retrieves the value associated to the specified key in the map
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @return value associated to the key
+    -- @raises Constraint_Error if the key is not in the map
+    --
+    function Get(Map : Map_Type; Key : String) return Unbounded_String;
+
+    --
+    -- Sets the specified key to the specified value in the properties map. If
+    -- the key is already present, overrides it
+    --
+    -- @param Map map to query
+    -- @param Key key to set
+    -- @param Value value to set
+    --
+    procedure Set(Map : in out Map_Type; Key : String; Value : Unbounded_String);
+
+    --
+    -- Retrieves the value associated to the specified key in the map
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @return value associated to the key
+    -- @raises Constraint_Error if the key is not in the map
+    --
+    function Get(Map : Map_Type; Key : Unbounded_String) return String;
+
+    --
+    -- Sets the specified key to the specified value in the properties map. If
+    -- the key is already present, overrides it
+    --
+    -- @param Map map to query
+    -- @param Key key to set
+    -- @param Value value to set
+    --
+    procedure Set(Map : in out Map_Type; Key : Unbounded_String; Value : String);
 private
     function Unescaped_Right_Trim(Line : Unbounded_String) return Unbounded_String;
 
     function Find_Delimiter(Line : Unbounded_String) return Natural;
+
+    function Escape(Input : Unbounded_String) return Unbounded_String;
 
     function Unescape(Input : Unbounded_String) return Unbounded_String;
 
