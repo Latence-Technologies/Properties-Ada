@@ -5,4 +5,5 @@ package Properties_Test is
     procedure Initialize (T : in out Test);
 private
     procedure Test_Properties_Load;
+    procedure Test_Properties_Save;
 end Properties_Test;

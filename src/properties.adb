@@ -1,4 +1,5 @@
 
+with Ada.Characters.Latin_1; use Ada.Characters.Latin_1;
 with Ada.Directories;
 with Ada.Strings;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
@@ -38,8 +39,6 @@ package body Properties is
             Get_Line(File, Line);
             Trim(Line, Ada.Strings.Left);
 
-            Ada.Text_IO.Put_Line("Reading line " & (+Line));
-
             -- if line is a comment
             -- note: a comment may not be on the same line as a key value pair
             -- e.g. key=value # comment
@@ -50,16 +49,12 @@ package body Properties is
                 goto Continue;
             end if;
 
-            Ada.Text_IO.Put_Line("Not a comment");
-
             Value_Delimiter := Find_Delimiter(Line);
 
             if Value_Delimiter = 0 then
                 Map.Include(Line, +"");
                 goto Continue;
             end if;
-
-            Ada.Text_IO.Put_Line("Has value");
 
             declare
                 Key : Unbounded_String := Unbounded_Slice(Line, 1, Value_Delimiter - 1);
@@ -68,10 +63,7 @@ package body Properties is
                 Key := Unescape(Unescaped_Right_Trim(Key));
                 Trim(Value, Ada.Strings.Left);
 
-                Ada.Text_IO.Put_Line("Unescaped key");
                 while Is_Multiline(Value) loop
-                    Ada.Text_IO.Put_Line(+Value & " is multiline");
-
                     if End_Of_File(File) then
                         raise Syntax_Error with "Multiline property at the end of the file";
                     end if;
@@ -82,8 +74,6 @@ package body Properties is
                 end loop;
 
                 Value := Unescape(Value);
-                Ada.Text_IO.Put_Line("Unescaped value");
-
                 Map.Include(Key, Value);
             end;
             <<Continue>>
@@ -160,16 +150,49 @@ package body Properties is
         end if;
     end Find_Delimiter;
 
+    function Escape(Input : Unbounded_String) return Unbounded_String is
+        Index : Positive := 1;
+        Value : Unbounded_String := Input;
+    begin
+        while Index < Length(Value) loop
+            if Element(Value, Index) = '='
+                or else Element(Value, Index) = ':'
+                or else Element(Value, Index) = ' '
+                or else Element(Value, Index) = '\' then
+                Value := Replace_Slice(Value, Index, Index, "\" & Element(Value, Index));
+            elsif Element(Value, Index) = LF then
+                Value := Replace_Slice(Value, Index, Index, "\n");
+            elsif Element(Value, Index) = CR then
+                Value := Replace_Slice(Value, Index, Index, "\r");
+            elsif Element(Value, Index) = HT then
+                Value := Replace_Slice(Value, Index, Index, "\t");
+            end if;
+        end loop;
+        return Value;
+    end Escape;
+
     function Unescape(Input : Unbounded_String) return Unbounded_String is
         Index : Positive := 1;
         Value : Unbounded_String := Input;
     begin
-        while Index <= Length(Value) loop
+        while Index < Length(Value) loop
             if Element(Value, Index) = '\' then
-                Value := Delete(Value, Index, Index);
-            else -- no need to increment if we deleted a char
-                Index := Index + 1;
+                if Element(Value, Index + 1) = 'n' then
+                    Value := Replace_Slice(Value, Index, Index + 1, "" & LF);
+                elsif Element(Value, Index + 1) = 'r' then
+                    Value := Replace_Slice(Value, Index, Index + 1, "" & CR);
+                elsif Element(Value, Index + 1) = 't' then
+                    Value := Replace_Slice(Value, Index, Index + 1, "" & HT);
+                elsif Element(Value, Index + 1) = 'u' then
+                    raise Syntax_Error with "Unicode escape characters are not supported";
+                else
+                    Value := Delete(Value, Index, Index);
+                end if;
             end if;
+
+            -- this goes to the next one if the current char isn't \ but skips
+            -- a char if it was escaped (skips what was escaped)
+            Index := Index + 1;
         end loop;
         return Value;
     end Unescape;
