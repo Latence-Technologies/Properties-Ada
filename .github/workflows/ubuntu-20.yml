@@ -1,4 +1,4 @@
-name: Ada (GNAT)
+name: Ubuntu 20.04
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       run: gprbuild -j0 -p test/properties_ada_test.gpr
       
     - name: Run Tests
-      run: bin/test_runner -x -d test-results/
+      run: ./bin/test_runner -x -d test-results/
       
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
