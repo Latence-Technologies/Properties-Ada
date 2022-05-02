@@ -40,6 +40,13 @@ package Properties is
     function Load(File_Path : String) return Map_Type;
 
     --
+    -- Retrieves the number of entries in the map
+    --
+    -- @param Map map to retrive the number of entries from
+    --
+    function Entry_Count(Map : Map_Type) return Integer;
+
+    --
     -- Checks if the map contains the specified key
     --
     -- @param Map map to query

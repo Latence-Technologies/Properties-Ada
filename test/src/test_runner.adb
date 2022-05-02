@@ -1,3 +1,5 @@
+with Ada.Text_IO;
+
 with Ahven.Text_Runner;
 with Ahven.Framework;
 
