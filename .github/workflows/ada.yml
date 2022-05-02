@@ -18,10 +18,16 @@ jobs:
     - name: Set up GNAT toolchain
       run: >
         sudo apt-get update && 
-        sudo apt-get install gnat gprbuild
+        sudo apt-get install gnat gprbuild libahven9-dev
 
     - name: Build
       run: gprbuild -j0 -p test/properties_ada_test.gpr
       
-    - name: Test
-      run: bin/test_runner
+    - name: Run Tests
+      run: bin/test_runner -x -d test-results/
+      
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      with:
+        report_paths: 'test-results/TEST-*.xml'
