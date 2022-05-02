@@ -37,4 +37,15 @@ package Properties is
     -- @raises Ada.IO_Exceptions.NAME_ERROR if the file does not exist
     --
     function Load(File_Path : String) return Map_Type;
+private
+    function Unescaped_Right_Trim(Line : Unbounded_String) return Unbounded_String;
+
+    function Find_Delimiter(Line : Unbounded_String) return Natural;
+
+    function Unescape(Input : Unbounded_String) return Unbounded_String;
+
+    function Is_Multiline(Value : Unbounded_String) return Boolean;
+
+    function "+"(Value : String) return Unbounded_String renames To_Unbounded_String;
+    function "+"(Value : Unbounded_String) return String renames To_String;
 end Properties;

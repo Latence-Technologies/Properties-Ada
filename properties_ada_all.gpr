@@ -1,0 +1,3 @@
+aggregate project Properties_Ada_All is
+    for Project_Files use ("properties_ada.gpr", "test/properties_ada_test.gpr");
+end Properties_Ada_All;
