@@ -214,10 +214,10 @@ package body Properties is
         return Escape_Count mod 2 = 1; -- odd number of escape characters at the end
     end Is_Multiline;
 
-    function Entry_Count(Map : Map_Type) return Integer is
+    function Count(Map : Map_Type) return Integer is
     begin
         return Integer(Property_Map.Length(Map));
-    end Entry_Count;
+    end Count;
 
     function Contains(Map : Map_Type; Key : Unbounded_String) return Boolean is
     begin

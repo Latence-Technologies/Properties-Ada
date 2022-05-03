@@ -5,6 +5,9 @@ with Ahven.Framework;
 
 with Properties_Test;
 
+--
+-- Launches the execution of all tests
+--
 procedure Test_Runner is
     S : Ahven.Framework.Test_Suite := Ahven.Framework.Create_Suite("All");
 begin

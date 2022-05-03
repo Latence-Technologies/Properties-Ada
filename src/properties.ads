@@ -5,10 +5,14 @@ with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Ada.Strings.Unbounded.Hash;
 
 --
--- Package to load and save .properties files
+-- Package to interact with .properties files. Offers functionalities for 
+-- saving, loading, querying and editing .properties files.
 --
 package Properties is
 
+    --
+    -- Thrown when a given .properties file has an invalid syntax
+    --
     Syntax_Error : exception;
 
     package Property_Map is new Ada.Containers.Hashed_Maps
@@ -44,7 +48,7 @@ package Properties is
     --
     -- @param Map map to retrive the number of entries from
     --
-    function Entry_Count(Map : Map_Type) return Integer;
+    function Count(Map : Map_Type) return Integer;
 
     --
     -- Checks if the map contains the specified key

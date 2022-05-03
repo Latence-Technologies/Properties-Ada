@@ -1,5 +1,8 @@
 with Ahven.Framework;
 
+--
+-- Execute tests on the Properties package
+--
 package Properties_Test is
     type Test is new Ahven.Framework.Test_Case with null record;
     procedure Initialize (T : in out Test);
