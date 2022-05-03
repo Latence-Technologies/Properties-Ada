@@ -37,6 +37,7 @@ package body Properties_Test is
                                                      "! The exclamation mark can also be used for comments." & LF &
                                                      "# Lines with ""properties"" contain a key and a value separated by a delimiting character." & LF &
                                                      "# There are 3 delimiting characters: '=' (equal), ':' (colon) and ' ' (space)." & LF &
+                                                     "" & LF & 
                                                      "website = https://en.wikipedia.org/" & LF &
                                                      "language : English" & LF &
                                                      "topic .properties files" & LF &

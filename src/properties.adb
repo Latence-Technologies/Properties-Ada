@@ -38,6 +38,10 @@ package body Properties is
             exit when End_Of_File(File);
             Get_Line(File, Line);
             Trim(Line, Ada.Strings.Left);
+            
+            if Length(Line) = 0 then
+                goto Continue;
+            end if;
 
             -- if line is a comment
             -- note: a comment may not be on the same line as a key value pair
