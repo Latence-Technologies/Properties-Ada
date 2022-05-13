@@ -1,7 +1,9 @@
 # Properties-Ada
 
 Properties Ada is a lightweight simplistic Ada library for parsing .properties 
-files. It currently support most of .properties features such as
+files. It follows the Wikipedia proposal at https://en.wikipedia.org/wiki/.properties
+
+Properties Ada currently supports most of .properties features such as
 
   - `#` and `!` line comments
   - `=`, `:` and space delimiters
