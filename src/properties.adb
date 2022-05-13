@@ -1,4 +1,5 @@
 
+with Ada.Characters.Handling;
 with Ada.Characters.Latin_1; use Ada.Characters.Latin_1;
 with Ada.Directories;
 with Ada.Strings;
@@ -237,6 +238,15 @@ package body Properties is
     begin
         return Property_Map.Element(Map, Key);
     end Get;
+    
+    function Get(Map : Map_Type; Key : Unbounded_String; Default : Unbounded_String) return Unbounded_String is
+    begin
+        if Contains(Map, Key) then
+            return Get(Map, Key);
+        end if;
+        
+        return Default;
+    end Get;
 
     procedure Set(Map : in out Map_Type; Key : Unbounded_String; Value : Unbounded_String) is
     begin
@@ -246,6 +256,15 @@ package body Properties is
     function Get(Map : Map_Type; Key : String) return String is
     begin
         return +Get(Map, +Key);
+    end Get;
+    
+    function Get(Map : Map_Type; Key : String; Default : String) return String is
+    begin
+        if Contains(Map, Key) then
+            return Get(Map, Key);
+        end if;
+        
+        return Default;
     end Get;
 
     procedure Set(Map : in out Map_Type; Key : String; Value : String) is
@@ -257,6 +276,15 @@ package body Properties is
     begin
         return Get(Map, +Key);
     end Get;
+    
+    function Get(Map : Map_Type; Key : String; Default : Unbounded_String) return Unbounded_String is
+    begin
+        if Contains(Map, Key) then
+            return Get(Map, Key);
+        end if;
+        
+        return Default;
+    end Get;
 
     procedure Set(Map : in out Map_Type; Key : String; Value : Unbounded_String) is
     begin
@@ -267,9 +295,48 @@ package body Properties is
     begin
         return +Get(Map, Key);
     end Get;
-
+    
+    function Get(Map : Map_Type; Key : Unbounded_String; Default : String) return String is
+    begin
+        if Contains(Map, Key) then
+            return Get(Map, Key);
+        end if;
+        
+        return Default;
+    end Get;
+    
     procedure Set(Map : in out Map_Type; Key : Unbounded_String; Value : String) is
     begin
         Set(Map, Key, +Value);
     end Set;
+
+    function Get(Map : Map_Type; Key : Unbounded_String) return Boolean is
+        Value : String := Ada.Characters.Handling.To_Lower(Get(Map, Key));
+    begin
+        return Value = "true" or Value = "yes" or Value = "y";
+    end Get;
+
+    function Get(Map : Map_Type; Key : String) return Boolean is
+        Value : String := Ada.Characters.Handling.To_Lower(Get(Map, Key));
+    begin
+        return Value = "true" or Value = "yes" or Value = "y";
+    end Get;
+    
+    function Get(Map : Map_Type; Key : Unbounded_String; Default : Boolean) return Boolean is
+    begin
+        if Contains(Map, Key) then
+            return Get(Map, Key);
+        end if;
+        
+        return Default;
+    end Get;
+
+    function Get(Map : Map_Type; Key : String; Default : Boolean) return Boolean is
+    begin
+        if Contains(Map, Key) then
+            return Get(Map, Key);
+        end if;
+        
+        return Default;
+    end Get;
 end Properties;

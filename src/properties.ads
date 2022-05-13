@@ -75,6 +75,17 @@ package Properties is
     -- @raises Constraint_Error if the key is not in the map
     --
     function Get(Map : Map_Type; Key : Unbounded_String) return Unbounded_String;
+    
+    --
+    -- Retrieves the value associated to the specified key in the map if present
+    -- or return default value if absent
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @param Default default value to return if absent
+    -- @return value associated to key, or default
+    --
+    function Get(Map : Map_Type; Key : Unbounded_String; Default : Unbounded_String) return Unbounded_String;
 
     --
     -- Sets the specified key to the specified value in the properties map. If
@@ -95,6 +106,17 @@ package Properties is
     -- @raises Constraint_Error if the key is not in the map
     --
     function Get(Map : Map_Type; Key : String) return String;
+    
+    --
+    -- Retrieves the value associated to the specified key in the map if present
+    -- or return default value if absent
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @param Default default value to return if absent
+    -- @return value associated to key, or default
+    --
+    function Get(Map : Map_Type; Key : String; Default : String) return String;
 
     --
     -- Sets the specified key to the specified value in the properties map. If
@@ -115,6 +137,17 @@ package Properties is
     -- @raises Constraint_Error if the key is not in the map
     --
     function Get(Map : Map_Type; Key : String) return Unbounded_String;
+    
+    --
+    -- Retrieves the value associated to the specified key in the map if present
+    -- or return default value if absent
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @param Default default value to return if absent
+    -- @return value associated to key, or default
+    --
+    function Get(Map : Map_Type; Key : String; Default : Unbounded_String) return Unbounded_String;
 
     --
     -- Sets the specified key to the specified value in the properties map. If
@@ -135,6 +168,17 @@ package Properties is
     -- @raises Constraint_Error if the key is not in the map
     --
     function Get(Map : Map_Type; Key : Unbounded_String) return String;
+    
+    --
+    -- Retrieves the value associated to the specified key in the map if present
+    -- or return default value if absent
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @param Default default value to return if absent
+    -- @return value associated to key, or default
+    --
+    function Get(Map : Map_Type; Key : Unbounded_String; Default : String) return String;
 
     --
     -- Sets the specified key to the specified value in the properties map. If
@@ -145,6 +189,48 @@ package Properties is
     -- @param Value value to set
     --
     procedure Set(Map : in out Map_Type; Key : Unbounded_String; Value : String);
+    
+    --
+    -- Retrieves the boolean value associated to the specified key in the map.
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @return value associated to the key
+    -- @raises Constraint_Error if the key is not in the map
+    --
+    function Get(Map : Map_Type; Key : Unbounded_String) return Boolean;
+    
+    --
+    -- Retrieves the boolean value associated to the specified key in the map.
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @return value associated to the key
+    -- @raises Constraint_Error if the key is not in the map
+    --
+    function Get(Map : Map_Type; Key : String) return Boolean;
+    
+    --
+    -- Retrieves the boolean value associated to the specified key in the map if 
+    -- present or return default value if absent
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @param Default default value to return if absent
+    -- @return value associated to key, or default
+    --
+    function Get(Map : Map_Type; Key : Unbounded_String; Default : Boolean) return Boolean;
+    
+    --
+    -- Retrieves the boolean value associated to the specified key in the map if 
+    -- present or return default value if absent
+    --
+    -- @param Map map to query
+    -- @param Key key associated to value
+    -- @param Default default value to return if absent
+    -- @return value associated to key, or default
+    --
+    function Get(Map : Map_Type; Key : String; Default : Boolean) return Boolean;
 private
     function Unescaped_Right_Trim(Line : Unbounded_String) return Unbounded_String;
 
