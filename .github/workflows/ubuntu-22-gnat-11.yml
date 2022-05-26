@@ -1,0 +1,42 @@
+name: Ubuntu 22.04 GNAT 11
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up GNAT toolchain
+      run: >
+        sudo apt-get update && 
+        sudo apt-get install gnat-11 gprbuild &&
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11 &&
+        wget https://www.ahven-framework.com/releases/ahven-2.8.tar.gz &&
+        tar xf ahven-2.8.tar.gz &&
+        cd ahven-2.8/gnat_linux &&
+        make PREFIX=/usr &&
+        sudo make install
+    - name: Build
+      run: gprbuild -j0 -p test/properties_ada_test.gpr
+
+    # Disabled because creating a tmp.properties file creates an infinite loop
+    # when running the test_runner inside github actions and a docker image
+    # Unit tests work well for me locally though
+    #
+    #- name: Run Tests
+    #  run: ./bin/test_runner -x -d test-results/
+      
+    #- name: Publish Test Report
+    #  uses: mikepenz/action-junit-report@v3
+    #  if: always() # always run even if the previous step fails
+    #  with:
+    #    report_paths: 'test-results/TEST-*.xml'
