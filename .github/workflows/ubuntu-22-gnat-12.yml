@@ -25,7 +25,7 @@ jobs:
         cd ahven-2.8/gnat_linux &&
         make PREFIX=/usr &&
         sudo make install &&
-		ln -s /usr/local/share/gpr/ahven.gpr /usr/share/gpr/ahven.gpr
+        ln -s /usr/local/share/gpr/ahven.gpr /usr/share/gpr/ahven.gpr
     - name: Build
       run: gprbuild -j0 -p test/properties_ada_test.gpr
 
